@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ulangan Harian — Teks Diskusi (60 Soal)</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;0,6..72,700;1,6..72,500&family=Public+Sans:wght@400;500;600;700&display=swap');
+
+:root{
+  --bg:#EEF1F4; --panel:#FFFFFF; --ink:#1F2937; --ink-soft:#5B6472;
+  --pro:#2F6F4E; --pro-soft:#E4F0E8;
+  --kontra:#A63D40; --kontra-soft:#F6E6E6;
+  --isu:#C08A2E; --isu-soft:#FBF1DE;
+  --jodoh:#2C6E7F; --jodoh-soft:#E1EEF1;
+  --line:#DDE2E8; --radius:14px;
+}
+*{ box-sizing:border-box; }
+body{ margin:0; background:var(--bg); color:var(--ink); font-family:'Public Sans',sans-serif; line-height:1.55; min-height:100vh; padding:28px 14px 100px; }
+.wrap{ max-width:800px; margin:0 auto; }
+
+/* ---------- Masthead ---------- */
+.masthead{ text-align:center; margin-bottom:26px; }
+.eyebrow{ font-size:12.5px; letter-spacing:0.14em; text-transform:uppercase; color:var(--ink-soft); font-weight:600; margin-bottom:6px; }
+h1{ font-family:'Newsreader',serif; font-weight:600; font-size:30px; margin:0 0 4px; letter-spacing:-0.01em; }
+.subtitle{ color:var(--ink-soft); font-size:14.5px; margin-bottom:16px; }
+.debate-bar{ display:flex; height:10px; border-radius:999px; overflow:hidden; border:1px solid var(--line); margin:0 auto; max-width:420px; position:relative; }
+.debate-bar .pro{ background:var(--pro); flex:1; }
+.debate-bar .kontra{ background:var(--kontra); flex:1; }
+.debate-bar .dot{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); width:16px; height:16px; border-radius:50%; background:var(--isu); border:2px solid #fff; }
+.debate-labels{ display:flex; justify-content:space-between; max-width:420px; margin:6px auto 0; font-size:11px; letter-spacing:0.08em; text-transform:uppercase; color:var(--ink-soft); font-weight:600; }
+
+/* ---------- Panels ---------- */
+.panel{ background:var(--panel); border:1px solid var(--line); border-radius:var(--radius); padding:26px; margin-bottom:18px; box-shadow:0 1px 2px rgba(31,41,55,0.03); }
+
+/* ---------- Start screen ---------- */
+.struktur{ display:grid; grid-template-columns:1fr 1fr; gap:10px; margin:16px 0 20px; }
+.struktur .isu-box{ grid-column:1/-1; background:var(--isu-soft); border:1px solid #EAD6A8; color:#7A5A18; }
+.struktur .pro-box{ background:var(--pro-soft); border:1px solid #BFDCC9; color:#1E4A33; }
+.struktur .kontra-box{ background:var(--kontra-soft); border:1px solid #E3BFC0; color:#6E2325; }
+.struktur .simpulan-box{ grid-column:1/-1; background:#EEF0F4; border:1px solid var(--line); color:var(--ink-soft); }
+.struktur div{ border-radius:10px; padding:12px 14px; font-size:13px; }
+.struktur .label{ display:block; font-weight:700; font-size:11px; letter-spacing:0.06em; text-transform:uppercase; margin-bottom:3px; }
+
+.komposisi{ display:flex; flex-wrap:wrap; gap:8px; margin:16px 0 22px; }
+.komposisi .chip{ font-size:11.5px; font-weight:700; padding:5px 11px; border-radius:999px; border:1px solid var(--line); color:var(--ink-soft); }
+
+label.field-label{ display:block; font-size:13px; font-weight:600; margin-bottom:6px; }
+input[type="text"]{ width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--line); font-family:inherit; font-size:14.5px; margin-bottom:16px; background:#FAFBFC; }
+input[type="text"]:focus{ outline:2px solid var(--isu); outline-offset:1px; background:#fff; }
+
+button{ font-family:inherit; font-weight:700; font-size:14.5px; border:none; border-radius:10px; padding:13px 22px; cursor:pointer; transition:transform .08s ease, opacity .15s ease; }
+button:active{ transform:scale(.98); }
+.btn-primary{ background:var(--ink); color:#fff; width:100%; }
+.btn-primary:hover{ opacity:.88; }
+.btn-secondary{ background:transparent; color:var(--ink); border:1px solid var(--line); }
+.btn-secondary:hover{ background:#F3F5F7; }
+.btn-row{ display:flex; gap:10px; margin-top:4px; }
+
+/* ---------- Sticky reading button ---------- */
+.sticky-bar{ position:sticky; top:10px; z-index:20; display:flex; justify-content:space-between; align-items:center; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:10px 14px; margin-bottom:18px; box-shadow:0 2px 8px rgba(31,41,55,.06); }
+.sticky-bar .p-text{ font-size:12.5px; font-weight:600; color:var(--ink-soft); }
+.btn-bacaan{ background:var(--isu-soft); color:#7A5A18; border:1px solid #EAD6A8; padding:9px 14px; font-size:13px; }
+
+/* ---------- Modal ---------- */
+.modal-overlay{ position:fixed; inset:0; background:rgba(31,41,55,.55); z-index:100; display:flex; align-items:flex-end; justify-content:center; }
+@media(min-width:640px){ .modal-overlay{ align-items:center; } }
+.modal-box{ background:#fff; width:100%; max-width:640px; max-height:85vh; border-radius:16px 16px 0 0; overflow:hidden; display:flex; flex-direction:column; }
+@media(min-width:640px){ .modal-box{ border-radius:16px; } }
+.modal-head{ display:flex; justify-content:space-between; align-items:center; padding:16px 18px; border-bottom:1px solid var(--line); }
+.modal-head h2{ font-family:'Newsreader',serif; font-size:19px; margin:0; }
+.modal-close{ background:#F3F4F6; border:none; width:30px; height:30px; border-radius:50%; font-size:16px; cursor:pointer; color:var(--ink-soft); }
+.modal-tabs{ display:flex; gap:6px; padding:12px 18px 0; }
+.modal-tab{ background:#F3F4F6; border:1px solid var(--line); font-size:12.5px; font-weight:600; padding:7px 12px; border-radius:999px; cursor:pointer; color:var(--ink-soft); }
+.modal-tab.active{ background:var(--ink); color:#fff; border-color:var(--ink); }
+.modal-body{ padding:16px 18px 22px; overflow-y:auto; }
+.stimulus-title{ font-family:'Newsreader',serif; font-weight:600; font-size:18px; margin-bottom:10px; }
+.stimulus-part{ margin-bottom:12px; }
+.stimulus-part .tag-part{ display:inline-block; font-size:10.5px; font-weight:700; letter-spacing:.05em; text-transform:uppercase; padding:2px 8px; border-radius:999px; margin-bottom:5px; }
+.stimulus-part.p-isu .tag-part{ background:var(--isu-soft); color:#7A5A18; }
+.stimulus-part.p-mendukung .tag-part{ background:var(--pro-soft); color:#1E4A33; }
+.stimulus-part.p-menentang .tag-part{ background:var(--kontra-soft); color:#6E2325; }
+.stimulus-part.p-simpulan .tag-part{ background:#EEF0F4; color:var(--ink-soft); }
+.stimulus-part p{ font-size:13.8px; margin:0; }
+
+/* ---------- Section headers ---------- */
+.section-head{ display:flex; align-items:center; gap:10px; margin-bottom:6px; }
+.section-badge{ font-family:'Newsreader',serif; font-weight:700; font-size:14px; color:#fff; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+.section-badge.a{ background:var(--ink); }
+.section-badge.b{ background:var(--isu); }
+.section-badge.c{ background:var(--jodoh); }
+.section-badge.d{ background:var(--kontra); }
+.section-badge.e{ background:var(--pro); }
+.section-badge.f{ background:#5B4B8A; }
+.section-title{ font-family:'Newsreader',serif; font-weight:600; font-size:19px; }
+.section-desc{ font-size:12.5px; color:var(--ink-soft); margin:2px 0 18px 40px; }
+
+/* ---------- Question blocks ---------- */
+.question-block{ padding:20px 0; border-bottom:1px solid var(--line); }
+.question-block:last-child{ border-bottom:none; }
+.q-number{ display:inline-block; font-family:'Newsreader',serif; font-weight:600; font-size:12.5px; color:var(--isu); background:var(--isu-soft); border-radius:999px; padding:2px 10px; margin-bottom:9px; }
+.q-text{ font-size:15px; font-weight:600; margin-bottom:12px; line-height:1.5; }
+.q-text .kutipan{ display:block; font-family:'Newsreader',serif; font-style:italic; font-weight:500; font-size:14.5px; color:var(--ink-soft); background:#F7F8FA; border-left:3px solid var(--isu); padding:10px 14px; margin:8px 0 10px; border-radius:0 8px 8px 0; }
+.q-ref{ display:inline-block; font-size:11px; font-weight:700; color:var(--jodoh); background:var(--jodoh-soft); padding:1px 8px; border-radius:6px; margin-bottom:8px; }
+
+.options{ display:flex; flex-direction:column; gap:8px; }
+.option{ display:flex; align-items:flex-start; gap:10px; padding:10px 13px; border:1px solid var(--line); border-radius:10px; cursor:pointer; font-size:13.8px; transition:border-color .12s ease, background .12s ease; }
+.option:hover{ border-color:#C7CDD5; background:#FAFBFC; }
+.option input{ margin-top:2px; accent-color:var(--ink); flex-shrink:0; }
+.option.selected{ border-color:var(--ink); background:#F3F4F6; }
+.option.correct{ border-color:var(--pro); background:var(--pro-soft); }
+.option.wrong{ border-color:var(--kontra); background:var(--kontra-soft); }
+.tag{ font-size:10.5px; font-weight:700; letter-spacing:.04em; padding:1px 8px; border-radius:999px; margin-left:auto; white-space:nowrap; }
+.tag.correct{ background:var(--pro); color:#fff; }
+.tag.wrong{ background:var(--kontra); color:#fff; }
+.hint-multi{ font-size:11.5px; color:var(--jodoh); font-weight:600; margin-bottom:10px; }
+
+/* true/false */
+.bs-row{ display:flex; gap:10px; }
+.bs-btn{ flex:1; padding:11px; border-radius:10px; border:1px solid var(--line); text-align:center; font-weight:700; font-size:13.5px; cursor:pointer; background:#fff; color:var(--ink-soft); }
+.bs-btn.sel-benar.active{ border-color:var(--pro); background:var(--pro-soft); color:#1E4A33; }
+.bs-btn.sel-salah.active{ border-color:var(--kontra); background:var(--kontra-soft); color:#6E2325; }
+.bs-btn.correct{ border-color:var(--pro); background:var(--pro-soft); color:#1E4A33; }
+.bs-btn.wrong{ border-color:var(--kontra); background:var(--kontra-soft); color:#6E2325; }
+
+/* matching */
+.jodoh-row{ display:flex; align-items:center; gap:12px; margin-bottom:10px; flex-wrap:wrap; }
+.jodoh-kiri{ flex:0 0 190px; font-size:13.5px; font-weight:600; background:var(--jodoh-soft); color:#1B4C58; padding:9px 12px; border-radius:8px; }
+select.jodoh-select{ flex:1; min-width:200px; padding:10px 12px; border-radius:8px; border:1px solid var(--line); font-family:inherit; font-size:13.2px; background:#FAFBFC; }
+select.jodoh-select.correct{ border-color:var(--pro); background:var(--pro-soft); }
+select.jodoh-select.wrong{ border-color:var(--kontra); background:var(--kontra-soft); }
+.jodoh-answer-key{ font-size:11.5px; color:var(--pro); font-weight:600; margin-top:-4px; margin-bottom: 2px; }
+
+/* isian */
+input.isian-input{ width:100%; padding:11px 13px; border-radius:10px; border:1px solid var(--line); font-family:inherit; font-size:14px; background:#FAFBFC; }
+input.isian-input.correct{ border-color:var(--pro); background:var(--pro-soft); }
+input.isian-input.wrong{ border-color:var(--kontra); background:var(--kontra-soft); }
+.isian-key{ font-size:12px; color:var(--pro); font-weight:600; margin-top:6px; }
+
+/* essay */
+textarea.esai-input{ width:100%; min-height:110px; padding:12px 13px; border-radius:10px; border:1px solid var(--line); font-family:inherit; font-size:13.8px; resize:vertical; background:#FAFBFC; }
+.esai-counter{ font-size:11px; color:var(--ink-soft); margin-top:5px; text-align:right; }
+.esai-review-box{ background:#F7F8FA; border:1px solid var(--line); border-radius:10px; padding:12px 14px; font-size:13.5px; color:var(--ink); white-space:pre-wrap; }
+.badge-review{ display:inline-block; font-size:10.5px; font-weight:700; background:#EEE9F7; color:#5B4B8A; padding:2px 9px; border-radius:999px; margin-bottom:8px; }
+
+/* ---------- Progress ---------- */
+.progress-track{ height:8px; border-radius:999px; background:var(--line); overflow:hidden; margin-bottom:4px; }
+.progress-fill{ height:100%; width:0%; background:linear-gradient(90deg,var(--pro),var(--isu) 50%,var(--kontra)); transition:width .25s ease; }
+.progress-text{ font-size:12px; color:var(--ink-soft); font-weight:600; }
+
+.warn{ font-size:13px; color:var(--kontra); font-weight:600; margin:16px 0; display:none; text-align:center; }
+
+/* ---------- Results ---------- */
+.score-hero{ text-align:center; padding:6px 0 20px; }
+.score-num{ font-family:'Newsreader',serif; font-size:52px; font-weight:700; line-height:1; }
+.score-label{ color:var(--ink-soft); font-size:13px; margin-top:6px; }
+.score-grid{ display:grid; grid-template-columns:repeat(5,1fr); gap:8px; margin-top:18px; }
+.score-cell{ text-align:center; background:#F7F8FA; border:1px solid var(--line); border-radius:10px; padding:10px 4px; }
+.score-cell b{ display:block; font-family:'Newsreader',serif; font-size:18px; }
+.score-cell span{ font-size:10px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
+.esai-note{ text-align:center; font-size:12.5px; color:#5B4B8A; background:#EEE9F7; border-radius:10px; padding:10px; margin-top:14px; }
+
+.history-item{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
+.history-item:last-child{ border-bottom:none; }
+.history-item .h-name{ font-weight:600; }
+.history-item .h-meta{ color:var(--ink-soft); font-size:12px; }
+.history-item .h-score{ font-family:'Newsreader',serif; font-weight:700; font-size:17px; }
+
+.hidden{ display:none !important; }
+footer.note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-top:10px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="masthead">
+    <div class="eyebrow">Bahasa Indonesia · Kelas IX</div>
+    <h1>Ulangan Harian: Teks Diskusi</h1>
+    <div class="subtitle">60 soal · 6 jenis soal · 3 teks stimulus</div>
+    <div class="debate-bar"><div class="pro"></div><div class="kontra"></div><div class="dot"></div></div>
+    <div class="debate-labels"><span>Mendukung</span><span>Menentang</span></div>
+  </div>
+
+  <!-- ===================== START SCREEN ===================== -->
+  <section id="screen-start" class="panel">
+    <div class="struktur">
+      <div class="isu-box"><span class="label">Isu</span>Persoalan yang punya dua sisi pandangan berbeda.</div>
+      <div class="pro-box"><span class="label">Argumen Mendukung</span>Alasan yang setuju terhadap isu.</div>
+      <div class="kontra-box"><span class="label">Argumen Menentang</span>Alasan yang tidak setuju terhadap isu.</div>
+      <div class="simpulan-box"><span class="label">Simpulan</span>Rangkuman &amp; saran dari kedua sisi pandangan.</div>
+    </div>
+
+    <div class="komposisi">
+      <span class="chip">A. Pilihan Ganda × 20</span>
+      <span class="chip">B. PG Kompleks × 10</span>
+      <span class="chip">C. Menjodohkan × 10</span>
+      <span class="chip">D. Benar/Salah × 10</span>
+      <span class="chip">E. Isian Singkat × 5</span>
+      <span class="chip">F. Esai × 5</span>
+    </div>
+
+    <label class="field-label" for="input-nama">Nama Siswa</label>
+    <input type="text" id="input-nama" placeholder="Tulis nama lengkap">
+    <label class="field-label" for="input-kelas">Kelas</label>
+    <input type="text" id="input-kelas" placeholder="Contoh: IX-A">
+
+    <button class="btn-primary" onclick="mulaiUjian()">Mulai Ulangan</button>
+    <div class="btn-row" style="margin-top:10px;">
+      <button class="btn-secondary" style="width:100%;" onclick="bukaModal()">Baca 3 Teks Diskusi Dahulu</button>
+    </div>
+  </section>
+
+  <!-- ===================== QUIZ SCREEN ===================== -->
+  <section id="screen-quiz" class="hidden">
+
+    <div class="sticky-bar">
+      <div style="flex:1; margin-right:12px;">
+        <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+        <div class="progress-text" id="progress-text">0 dari 60 soal terjawab</div>
+      </div>
+      <button class="btn-bacaan" onclick="bukaModal()">📖 Bahan Bacaan</button>
+    </div>
+
+    <!-- SECTION A -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge a">A</div><div class="section-title">Pilihan Ganda</div></div>
+      <div class="section-desc">20 soal · pilih satu jawaban yang paling tepat</div>
+      <div id="container-pg"></div>
+    </div>
+
+    <!-- SECTION B -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge b">B</div><div class="section-title">Pilihan Ganda Kompleks</div></div>
+      <div class="section-desc">10 soal · jawaban benar bisa lebih dari satu</div>
+      <div id="container-pgk"></div>
+    </div>
+
+    <!-- SECTION C -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge c">C</div><div class="section-title">Menjodohkan</div></div>
+      <div class="section-desc">10 pasangan · pilih pasangan yang tepat pada menu di sebelah kanan</div>
+      <div id="container-jodoh"></div>
+    </div>
+
+    <!-- SECTION D -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge d">D</div><div class="section-title">Benar / Salah</div></div>
+      <div class="section-desc">10 pernyataan · tentukan Benar atau Salah</div>
+      <div id="container-bs"></div>
+    </div>
+
+    <!-- SECTION E -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge e">E</div><div class="section-title">Isian Singkat</div></div>
+      <div class="section-desc">5 soal · isi dengan satu kata atau frasa singkat</div>
+      <div id="container-isian"></div>
+    </div>
+
+    <!-- SECTION F -->
+    <div class="panel">
+      <div class="section-head"><div class="section-badge f">F</div><div class="section-title">Esai</div></div>
+      <div class="section-desc">5 soal · jawab dengan kalimat lengkap (dinilai guru secara manual)</div>
+      <div id="container-esai"></div>
+    </div>
+
+    <div class="panel">
+      <div class="warn" id="warn-belum-lengkap">Masih ada soal yang belum dijawab. Periksa kembali sebelum mengumpulkan.</div>
+      <button class="btn-primary" onclick="kumpulkanJawaban()">Kumpulkan Ulangan</button>
+    </div>
+  </section>
+
+  <!-- ===================== RESULT SCREEN ===================== -->
+  <section id="screen-result" class="panel hidden">
+    <div class="score-hero">
+      <div class="score-num" id="score-num">0</div>
+      <div class="score-label" id="score-nama-label">—</div>
+      <div class="score-grid">
+        <div class="score-cell"><b id="sc-a">0/20</b><span>PG</span></div>
+        <div class="score-cell"><b id="sc-b">0/10</b><span>PGK</span></div>
+        <div class="score-cell"><b id="sc-c">0/10</b><span>Jodoh</span></div>
+        <div class="score-cell"><b id="sc-d">0/10</b><span>B-S</span></div>
+        <div class="score-cell"><b id="sc-e">0/5</b><span>Isian</span></div>
+      </div>
+      <div class="esai-note">5 jawaban esai tersimpan dan menunggu penilaian guru secara manual (lihat di bawah).</div>
+    </div>
+    <div id="review-container"></div>
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="ulangiUjian()">Ulangi Ulangan</button>
+      <button class="btn-secondary" onclick="tampilkanRiwayat()">Lihat Riwayat Nilai</button>
+    </div>
+  </section>
+
+  <!-- ===================== HISTORY SCREEN ===================== -->
+  <section id="screen-history" class="panel hidden">
+    <h1 style="font-size:20px; margin-bottom:16px;">Riwayat Nilai</h1>
+    <div id="history-container"></div>
+    <div class="btn-row" style="margin-top:16px;">
+      <button class="btn-secondary" onclick="kembaliDariRiwayat()">Kembali</button>
+    </div>
+  </section>
+
+  <footer class="note">Nilai objektif dihitung otomatis · jawaban esai tersimpan untuk diperiksa guru · data tersimpan selama sesi ini berlangsung.</footer>
+</div>
+
+<!-- ===================== MODAL BAHAN BACAAN ===================== -->
+<div class="modal-overlay hidden" id="modal-bacaan">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>Bahan Bacaan</h2>
+      <button class="modal-close" onclick="tutupModal()">✕</button>
+    </div>
+    <div class="modal-tabs" id="modal-tabs"></div>
+    <div class="modal-body" id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   PENYIMPANAN DATA
+   localStorage browser tidak tersedia untuk artifact di Claude.ai, sehingga
+   dipakai penyimpanan di memori (objek JS) dengan API mirip localStorage.
+   Jika file ini dipakai di luar Claude.ai (server sekolah/Moodle/Google Sites),
+   ganti "memoryStorage" dengan "window.localStorage" agar nilai tersimpan
+   permanen di perangkat siswa.
+   ========================================================================= */
+const memoryStorage = {
+  _data:{},
+  getItem(k){ return this._data.hasOwnProperty(k) ? this._data[k] : null; },
+  setItem(k,v){ this._data[k] = String(v); }
+};
+const STORAGE_KEY = "hasil_ulangan_teks_diskusi_60soal";
+function ambilRiwayat(){ const raw = memoryStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
+function simpanRiwayat(list){ memoryStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+/* =========================================================================
+   TEKS STIMULUS
+   ========================================================================= */
+const STIMULUS = [
+  {
+    judul: "Teks Diskusi 1: Perlukah Gadget Dibawa ke Sekolah?",
+    bagian: [
+      {tipe:"isu", label:"Isu", teks:"Di era digital, gadget seperti telepon pintar semakin dekat dengan kehidupan pelajar, termasuk saat berada di sekolah. Sebagian sekolah mengizinkan siswa membawa gadget, sementara sebagian lain melarangnya dengan alasan mengganggu konsentrasi belajar. Perbedaan pandangan ini memunculkan perdebatan: perlukah gadget dibawa ke sekolah?"},
+      {tipe:"mendukung", label:"Argumen Mendukung", teks:"Pihak yang setuju berpendapat bahwa gadget dapat menjadi alat bantu belajar yang efektif. Dengan gadget, siswa dapat mengakses informasi tambahan, kamus daring, hingga aplikasi pembelajaran interaktif. Selain itu, gadget memudahkan komunikasi antara siswa dan orang tua dalam keadaan darurat."},
+      {tipe:"menentang", label:"Argumen Menentang", teks:"Di sisi lain, pihak yang menentang menilai bahwa gadget justru dapat mengalihkan perhatian siswa dari pelajaran. Notifikasi media sosial dan permainan daring berpotensi membuat siswa kurang fokus. Selain itu, penggunaan gadget yang tidak diawasi berisiko memicu kecurangan saat ujian."},
+      {tipe:"simpulan", label:"Simpulan", teks:"Berdasarkan kedua sudut pandang tersebut, gadget memiliki manfaat sekaligus risiko bagi siswa di sekolah. Oleh karena itu, penggunaan gadget di sekolah sebaiknya diatur dengan kebijakan yang jelas, misalnya hanya digunakan pada waktu dan keperluan tertentu di bawah pengawasan guru."}
+    ]
+  },
+  {
+    judul: "Teks Diskusi 2: Belajar Daring atau Tatap Muka, Mana yang Lebih Efektif?",
+    bagian: [
+      {tipe:"isu", label:"Isu", teks:"Sejak pandemi, pembelajaran daring menjadi alternatif selain pembelajaran tatap muka di kelas. Setelah kondisi mereda, muncul perdebatan mengenai metode mana yang sebenarnya lebih efektif diterapkan dalam dunia pendidikan."},
+      {tipe:"mendukung", label:"Argumen Mendukung (Daring)", teks:"Pendukung pembelajaran daring berpendapat bahwa metode ini memberikan fleksibilitas waktu dan tempat. Siswa dapat belajar dari mana saja, sementara materi pembelajaran dapat diakses berulang kali melalui rekaman video. Pembelajaran daring juga dinilai melatih kemandirian siswa dalam mengatur waktu belajar."},
+      {tipe:"menentang", label:"Argumen Menentang (Daring)", teks:"Namun, sebagian pihak menilai pembelajaran tatap muka tetap lebih unggul karena interaksi langsung antara guru dan siswa lebih optimal. Guru dapat segera mengetahui kesulitan siswa dan memberikan bimbingan langsung. Selain itu, pembelajaran tatap muka mendukung perkembangan sosial siswa melalui interaksi dengan teman sebaya."},
+      {tipe:"simpulan", label:"Simpulan", teks:"Dengan demikian, baik pembelajaran daring maupun tatap muka memiliki kelebihan masing-masing. Pemilihan metode pembelajaran sebaiknya disesuaikan dengan kondisi, kebutuhan, dan karakteristik siswa agar proses belajar tetap berjalan efektif."}
+    ]
+  },
+  {
+    judul: "Teks Diskusi 3: Apakah Uang Saku Harian Perlu Dibatasi bagi Pelajar?",
+    bagian: [
+      {tipe:"isu", label:"Isu", teks:"Uang saku merupakan hal yang lumrah diberikan orang tua kepada anak yang bersekolah. Namun, muncul perdebatan mengenai perlu tidaknya jumlah uang saku harian pelajar dibatasi agar tidak menimbulkan kebiasaan konsumtif."},
+      {tipe:"mendukung", label:"Argumen Mendukung", teks:"Pihak yang setuju pembatasan uang saku berpendapat bahwa hal ini dapat melatih anak mengelola keuangan sejak dini. Dengan uang saku yang terbatas, anak akan belajar memprioritaskan kebutuhan dibandingkan keinginan, sekaligus terhindar dari kebiasaan jajan berlebihan yang kurang sehat."},
+      {tipe:"menentang", label:"Argumen Menentang", teks:"Sebaliknya, pihak yang tidak setuju menilai bahwa pembatasan uang saku yang terlalu ketat dapat membuat anak merasa tertekan, terutama jika kebutuhan sekolah mendadak muncul. Selain itu, setiap anak memiliki kebutuhan yang berbeda-beda, sehingga jumlah uang saku yang tepat sebaiknya disesuaikan dengan kondisi masing-masing keluarga."},
+      {tipe:"simpulan", label:"Simpulan", teks:"Oleh karena itu, pembatasan uang saku sebaiknya dilakukan secara bijak, yakni dengan mempertimbangkan kebutuhan riil anak sekaligus mengajarkan pengelolaan keuangan yang sehat, bukan sekadar membatasi jumlah nominalnya."}
+    ]
+  }
+];
+
+/* =========================================================================
+   BANK SOAL
+   ========================================================================= */
+
+// ---------- A. Pilihan Ganda (20) ----------
+const SOAL_PG = [
+  {teks:"Teks diskusi bertujuan untuk...", opsi:["menghibur pembaca dengan cerita rekaan","menyajikan dua sudut pandang berbeda agar pembaca dapat mempertimbangkan suatu isu","mempromosikan suatu produk atau jasa","menceritakan pengalaman pribadi penulis"], jawaban:1},
+  {teks:"Urutan struktur teks diskusi yang tepat adalah...", opsi:["Simpulan – Isu – Argumen Mendukung – Argumen Menentang","Isu – Argumen Mendukung – Argumen Menentang – Simpulan","Argumen Menentang – Argumen Mendukung – Isu – Simpulan","Isu – Simpulan – Argumen Mendukung – Argumen Menentang"], jawaban:1},
+  {teks:"Bagian isu dalam teks diskusi berisi...", opsi:["Rangkuman dari kedua sudut pandang","Alasan yang mendukung suatu pendapat","Pengenalan permasalahan yang memiliki dua sisi pandangan berbeda","Kesimpulan akhir penulis"], jawaban:2},
+  {teks:"Kalimat \"Namun, sebagian orang tidak setuju dengan pendapat tersebut\" termasuk ke bagian struktur...", opsi:["Isu","Argumen mendukung","Argumen menentang","Simpulan"], jawaban:2},
+  {teks:"Berikut ini termasuk konjungsi pertentangan, kecuali...", opsi:["tetapi","namun","sedangkan","dan"], jawaban:3},
+  {teks:"Kata modalitas dalam teks diskusi berfungsi untuk menunjukkan...", opsi:["urutan waktu kejadian","sikap atau keyakinan penulis terhadap suatu pernyataan","hubungan sebab akibat","jumlah data statistik"], jawaban:1},
+  {teks:"Berikut termasuk kata kerja mental, kecuali...", opsi:["berpendapat","menduga","meyakini","menendang"], jawaban:3},
+  {teks:"Perbedaan utama teks diskusi dengan teks eksposisi adalah...", opsi:["teks diskusi menyajikan dua sudut pandang berlawanan, sedangkan teks eksposisi hanya menyajikan satu sudut pandang","teks diskusi tidak memiliki struktur, sedangkan teks eksposisi memiliki struktur","teks diskusi selalu berupa fiksi, sedangkan teks eksposisi berupa nonfiksi","teks diskusi tidak boleh menggunakan data, sedangkan teks eksposisi harus menggunakan data"], jawaban:0},
+  {teks:"Kata ganti yang sering digunakan dalam teks diskusi untuk merujuk kelompok yang berpendapat, misalnya \"mereka\" atau \"pihak yang...\", disebut...", opsi:["konjungsi","pronomina","modalitas","afiksasi"], jawaban:1},
+  {teks:"Bagian simpulan dalam teks diskusi sebaiknya bersifat...", opsi:["memihak salah satu sisi secara tegas","netral dan mempertimbangkan kedua sisi pandangan","berisi data statistik semata","berupa ajakan untuk membeli produk"], jawaban:1},
+  {teks:"Berdasarkan Teks Diskusi 1, isu yang dibahas adalah...", opsi:["perlu tidaknya gadget dibawa ke sekolah","perlu tidaknya seragam sekolah diganti","perlu tidaknya jam sekolah ditambah","perlu tidaknya ujian nasional diadakan"], jawaban:0},
+  {teks:"Menurut Teks Diskusi 1, salah satu argumen mendukung penggunaan gadget di sekolah adalah...", opsi:["gadget membuat siswa lebih populer","gadget dapat menjadi alat bantu belajar yang efektif","gadget wajib dimiliki setiap siswa","gadget dapat menggantikan peran guru"], jawaban:1},
+  {teks:"Menurut Teks Diskusi 1, argumen yang menentang penggunaan gadget di sekolah adalah...", opsi:["gadget terlalu mahal bagi sebagian siswa","gadget dapat mengalihkan perhatian siswa dari pelajaran","gadget hanya boleh dimiliki oleh guru","gadget tidak dapat digunakan untuk belajar"], jawaban:1},
+  {teks:"Simpulan pada Teks Diskusi 1 menyarankan agar...", opsi:["gadget dilarang total di lingkungan sekolah","penggunaan gadget di sekolah diatur dengan kebijakan yang jelas","setiap siswa wajib membawa gadget","gadget hanya boleh dipakai saat istirahat"], jawaban:1},
+  {teks:"Berdasarkan Teks Diskusi 2, isu yang dibahas adalah...", opsi:["metode pembelajaran yang lebih efektif, daring atau tatap muka","perlu tidaknya libur sekolah ditambah","perlu tidaknya PR dihapuskan","metode penilaian ujian yang paling adil"], jawaban:0},
+  {teks:"Menurut Teks Diskusi 2, kelebihan pembelajaran daring yang disebutkan adalah...", opsi:["biaya yang lebih murah","fleksibilitas waktu dan tempat belajar","tidak memerlukan gadget","lebih disukai oleh semua siswa"], jawaban:1},
+  {teks:"Menurut Teks Diskusi 2, alasan pembelajaran tatap muka dinilai unggul adalah...", opsi:["tidak memerlukan biaya listrik","interaksi langsung antara guru dan siswa lebih optimal","dapat diakses kapan saja","tidak memerlukan kehadiran guru"], jawaban:1},
+  {teks:"Berdasarkan Teks Diskusi 3, isu yang dibahas adalah...", opsi:["perlu tidaknya uang saku harian pelajar dibatasi","perlu tidaknya siswa bekerja paruh waktu","perlu tidaknya kantin sekolah dibuka","perlu tidaknya siswa menabung di bank"], jawaban:0},
+  {teks:"Menurut Teks Diskusi 3, manfaat pembatasan uang saku yang disebutkan adalah...", opsi:["anak menjadi lebih hemat listrik","melatih anak mengelola keuangan sejak dini","anak menjadi lebih populer di sekolah","orang tua tidak perlu bekerja"], jawaban:1},
+  {teks:"Simpulan Teks Diskusi 3 menyarankan agar pembatasan uang saku dilakukan dengan cara...", opsi:["secara ketat tanpa pengecualian apa pun","secara bijak dengan mempertimbangkan kebutuhan riil anak","dihapuskan sepenuhnya","diserahkan sepenuhnya kepada anak"], jawaban:1}
+];
+
+// ---------- B. Pilihan Ganda Kompleks (10) ----------
+const SOAL_PGK = [
+  {teks:"Manakah pernyataan berikut yang termasuk ciri kebahasaan teks diskusi? (jawaban bisa lebih dari satu)", opsi:["Menggunakan konjungsi pertentangan","Menggunakan kata modalitas","Menggunakan kata kerja mental","Menggunakan kalimat perintah","Menggunakan pronomina"], jawaban:[0,1,2,4]},
+  {teks:"Manakah yang termasuk bagian struktur teks diskusi?", opsi:["Isu","Orientasi","Argumen mendukung","Argumen menentang","Simpulan"], jawaban:[0,2,3,4]},
+  {teks:"Berdasarkan Teks Diskusi 1, manakah argumen yang MENDUKUNG penggunaan gadget di sekolah?", opsi:["Gadget dapat menjadi alat bantu belajar","Gadget memudahkan komunikasi darurat dengan orang tua","Gadget dapat mengalihkan perhatian siswa","Gadget berisiko memicu kecurangan saat ujian"], jawaban:[0,1]},
+  {teks:"Berdasarkan Teks Diskusi 2, manakah yang termasuk kelebihan pembelajaran tatap muka?", opsi:["Interaksi langsung guru dan siswa lebih optimal","Mendukung perkembangan sosial siswa","Materi dapat diakses berulang lewat rekaman video","Fleksibel dari segi waktu dan tempat"], jawaban:[0,1]},
+  {teks:"Manakah konjungsi yang menyatakan hubungan pertentangan?", opsi:["tetapi","namun","sedangkan","karena","meskipun"], jawaban:[0,1,2,4]},
+  {teks:"Manakah pertimbangan yang tepat sebelum menentukan isu dalam teks diskusi?", opsi:["Isu harus memiliki dua sisi pandangan","Isu bersifat kontroversial atau dapat diperdebatkan","Isu harus berupa fakta tunggal tanpa perdebatan","Isu sebaiknya relevan dengan kehidupan pembaca"], jawaban:[0,1,3]},
+  {teks:"Berdasarkan Teks Diskusi 3, manakah argumen yang MENENTANG pembatasan uang saku?", opsi:["Anak bisa merasa tertekan jika kebutuhan mendadak muncul","Setiap anak memiliki kebutuhan yang berbeda-beda","Pembatasan melatih anak mengelola keuangan","Anak terhindar dari kebiasaan jajan berlebihan"], jawaban:[0,1]},
+  {teks:"Manakah kalimat berikut yang menunjukkan penggunaan kata modalitas?", opsi:["Mungkin kebijakan ini perlu dievaluasi kembali.","Ia berangkat ke sekolah pukul enam pagi.","Seharusnya siswa lebih bijak menggunakan gadget.","Kebijakan ini pasti akan berhasil diterapkan."], jawaban:[0,2,3]},
+  {teks:"Manakah yang merupakan fungsi bagian simpulan dalam teks diskusi?", opsi:["Merangkum kedua sudut pandang yang telah dibahas","Memberikan saran atau rekomendasi","Memihak salah satu argumen secara ekstrem","Menutup pembahasan isu secara keseluruhan"], jawaban:[0,1,3]},
+  {teks:"Manakah kata berikut yang termasuk kata kerja mental?", opsi:["berpendapat","menduga","berlari","meyakini","menulis surat"], jawaban:[0,1,3]}
+];
+
+// ---------- C. Menjodohkan (10) ----------
+// kanan sengaja diacak agar tidak sejajar dengan kiri
+const JODOH_KANAN = [
+  "Rangkuman dan saran dari kedua sudut pandang",
+  'Kata yang menyatakan aktivitas berpikir atau merasakan, misalnya "menduga"',
+  "Alasan yang tidak menyetujui isu yang dibahas",
+  "Membahas isu penggunaan gadget di sekolah",
+  "Pengenalan permasalahan yang memiliki dua sisi pandangan berbeda",
+  'Kata ganti untuk merujuk orang atau kelompok, misalnya "mereka"',
+  "Alasan yang menyetujui isu yang dibahas",
+  "Membahas isu metode pembelajaran daring atau tatap muka",
+  'Kata hubung yang menyatakan perlawanan, misalnya "tetapi"',
+  'Kata yang menunjukkan sikap atau keyakinan penulis, misalnya "mungkin"'
+];
+const SOAL_JODOH = [
+  {kiri:"Isu", jawaban:4},
+  {kiri:"Argumen Mendukung", jawaban:6},
+  {kiri:"Argumen Menentang", jawaban:2},
+  {kiri:"Simpulan", jawaban:0},
+  {kiri:"Konjungsi Pertentangan", jawaban:8},
+  {kiri:"Kata Modalitas", jawaban:9},
+  {kiri:"Kata Kerja Mental", jawaban:1},
+  {kiri:"Pronomina", jawaban:5},
+  {kiri:"Teks Diskusi 1", jawaban:3},
+  {kiri:"Teks Diskusi 2", jawaban:7}
+];
+
+// ---------- D. Benar/Salah (10) ----------
+const SOAL_BS = [
+  {teks:"Teks diskusi hanya menyajikan satu sudut pandang.", jawaban:false},
+  {teks:"Struktur teks diskusi terdiri atas isu, argumen mendukung, argumen menentang, dan simpulan.", jawaban:true},
+  {teks:"Konjungsi \"tetapi\" dan \"namun\" termasuk konjungsi pertentangan.", jawaban:true},
+  {teks:"Bagian simpulan dalam teks diskusi sebaiknya memihak salah satu sisi secara tegas.", jawaban:false},
+  {teks:"Berdasarkan Teks Diskusi 1, semua sekolah dalam teks tersebut sepakat melarang gadget.", jawaban:false},
+  {teks:"Berdasarkan Teks Diskusi 2, pembelajaran daring memberikan fleksibilitas waktu dan tempat.", jawaban:true},
+  {teks:"Berdasarkan Teks Diskusi 3, pembatasan uang saku disarankan dilakukan secara bijak.", jawaban:true},
+  {teks:"Kata modalitas menunjukkan fakta yang pasti dan tidak dapat dibantah.", jawaban:false},
+  {teks:"Teks diskusi bertujuan meyakinkan pembaca untuk memihak satu sisi pandangan saja.", jawaban:false},
+  {teks:"Isu dalam teks diskusi bersifat dapat diperdebatkan atau kontroversial.", jawaban:true}
+];
+
+// ---------- E. Isian Singkat (5) ----------
+const SOAL_ISIAN = [
+  {teks:"Bagian teks diskusi yang berisi pengenalan permasalahan disebut ____.", kunci:["isu"]},
+  {teks:"Konjungsi yang menyatakan hubungan pertentangan, misalnya \"tetapi\", \"namun\", dan \"sedangkan\", disebut konjungsi ____.", kunci:["pertentangan","perlawanan"]},
+  {teks:"Berdasarkan Teks Diskusi 1, alat yang menjadi topik perdebatan boleh atau tidaknya dibawa ke sekolah adalah ____.", kunci:["gadget","telepon pintar","smartphone","hp"]},
+  {teks:"Kata yang menunjukkan sikap atau keyakinan penulis terhadap suatu pernyataan disebut kata ____.", kunci:["modalitas"]},
+  {teks:"Berdasarkan Teks Diskusi 3, hal yang menjadi topik perdebatan perlu dibatasi atau tidak bagi pelajar adalah ____.", kunci:["uang saku","uang jajan"]}
+];
+
+// ---------- F. Esai (5) ----------
+const SOAL_ESAI = [
+  {teks:"Jelaskan pengertian teks diskusi dan sebutkan tujuannya!"},
+  {teks:"Sebutkan dan jelaskan secara singkat empat struktur teks diskusi!"},
+  {teks:"Berdasarkan Teks Diskusi 2, tuliskan kembali satu argumen mendukung dan satu argumen menentang pembelajaran daring menggunakan bahasamu sendiri!"},
+  {teks:"Buatlah sebuah isu (topik) baru yang layak dijadikan teks diskusi, lengkap dengan alasan mengapa isu tersebut memiliki dua sudut pandang!"},
+  {teks:"Menurut pendapatmu, apakah simpulan pada Teks Diskusi 3 sudah tepat? Jelaskan alasanmu disertai argumen pendukung dari sudut pandangmu sendiri!"}
+];
+
+/* =========================================================================
+   STATE
+   ========================================================================= */
+let dataSiswaAktif = {nama:"", kelas:""};
+let jawabanPG = new Array(SOAL_PG.length).fill(null);
+let jawabanPGK = SOAL_PGK.map(() => new Set());
+let jawabanJodoh = new Array(SOAL_JODOH.length).fill(null);
+let jawabanBS = new Array(SOAL_BS.length).fill(null);
+let jawabanIsian = new Array(SOAL_ISIAN.length).fill("");
+let jawabanEsai = new Array(SOAL_ESAI.length).fill("");
+
+const TOTAL_SOAL_OTOMATIS = SOAL_PG.length + SOAL_PGK.length + SOAL_JODOH.length + SOAL_BS.length + SOAL_ISIAN.length; // 55
+
+/* =========================================================================
+   MODAL BAHAN BACAAN
+   ========================================================================= */
+let modalTabAktif = 0;
+function bukaModal(){
+  const tabs = document.getElementById("modal-tabs");
+  tabs.innerHTML = STIMULUS.map((s,i) => `<button class="modal-tab ${i===modalTabAktif?'active':''}" onclick="gantiModalTab(${i})">Teks ${i+1}</button>`).join("");
+  renderModalBody();
+  document.getElementById("modal-bacaan").classList.remove("hidden");
+}
+function gantiModalTab(i){ modalTabAktif = i; bukaModal(); }
+function renderModalBody(){
+  const s = STIMULUS[modalTabAktif];
+  const body = document.getElementById("modal-body");
+  body.innerHTML = `<div class="stimulus-title">${s.judul}</div>` + s.bagian.map(b => `
+    <div class="stimulus-part p-${b.tipe}">
+      <span class="tag-part">${b.label}</span>
+      <p>${b.teks}</p>
+    </div>`).join("");
+}
+function tutupModal(){ document.getElementById("modal-bacaan").classList.add("hidden"); }
+
+/* =========================================================================
+   RENDER SOAL
+   ========================================================================= */
+function renderPG(){
+  const c = document.getElementById("container-pg");
+  c.innerHTML = SOAL_PG.map((s,i) => `
+    <div class="question-block">
+      <span class="q-number">A${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <div class="options">
+        ${s.opsi.map((op,j) => `
+          <label class="option" id="pg-${i}-${j}" onclick="pilihPG(${i},${j})">
+            <input type="radio" name="pg-${i}"><span>${op}</span>
+          </label>`).join("")}
+      </div>
+    </div>`).join("");
+}
+function pilihPG(i,j){
+  jawabanPG[i] = j;
+  document.querySelectorAll(`[id^="pg-${i}-"]`).forEach(el => el.classList.remove("selected"));
+  const el = document.getElementById(`pg-${i}-${j}`);
+  el.classList.add("selected"); el.querySelector("input").checked = true;
+  perbaruiProgress();
+}
+
+function renderPGK(){
+  const c = document.getElementById("container-pgk");
+  c.innerHTML = SOAL_PGK.map((s,i) => `
+    <div class="question-block">
+      <span class="q-number">B${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <div class="hint-multi">Pilih semua jawaban yang benar</div>
+      <div class="options">
+        ${s.opsi.map((op,j) => `
+          <label class="option" id="pgk-${i}-${j}" onclick="pilihPGK(${i},${j})">
+            <input type="checkbox"><span>${op}</span>
+          </label>`).join("")}
+      </div>
+    </div>`).join("");
+}
+function pilihPGK(i,j){
+  const set = jawabanPGK[i];
+  const el = document.getElementById(`pgk-${i}-${j}`);
+  if(set.has(j)){ set.delete(j); el.classList.remove("selected"); el.querySelector("input").checked = false; }
+  else { set.add(j); el.classList.add("selected"); el.querySelector("input").checked = true; }
+  perbaruiProgress();
+}
+
+function renderJodoh(){
+  const c = document.getElementById("container-jodoh");
+  c.innerHTML = `<div class="question-block" style="padding-top:0;">` + SOAL_JODOH.map((s,i) => `
+    <div class="jodoh-row">
+      <div class="jodoh-kiri">C${i+1}. ${s.kiri}</div>
+      <select class="jodoh-select" id="jodoh-${i}" onchange="pilihJodoh(${i}, this.value)">
+        <option value="">— pilih pasangan —</option>
+        ${JODOH_KANAN.map((k,j) => `<option value="${j}">${k}</option>`).join("")}
+      </select>
+    </div>`).join("") + `</div>`;
+}
+function pilihJodoh(i,val){
+  jawabanJodoh[i] = val === "" ? null : parseInt(val);
+  perbaruiProgress();
+}
+
+function renderBS(){
+  const c = document.getElementById("container-bs");
+  c.innerHTML = SOAL_BS.map((s,i) => `
+    <div class="question-block">
+      <span class="q-number">D${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <div class="bs-row">
+        <div class="bs-btn sel-benar" id="bs-${i}-benar" onclick="pilihBS(${i}, true)">Benar</div>
+        <div class="bs-btn sel-salah" id="bs-${i}-salah" onclick="pilihBS(${i}, false)">Salah</div>
+      </div>
+    </div>`).join("");
+}
+function pilihBS(i,val){
+  jawabanBS[i] = val;
+  document.getElementById(`bs-${i}-benar`).classList.toggle("active", val === true);
+  document.getElementById(`bs-${i}-salah`).classList.toggle("active", val === false);
+  perbaruiProgress();
+}
+
+function renderIsian(){
+  const c = document.getElementById("container-isian");
+  c.innerHTML = SOAL_ISIAN.map((s,i) => `
+    <div class="question-block">
+      <span class="q-number">E${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <input type="text" class="isian-input" id="isian-${i}" placeholder="Tulis jawabanmu" oninput="isiIsian(${i}, this.value)">
+    </div>`).join("");
+}
+function isiIsian(i,val){ jawabanIsian[i] = val; perbaruiProgress(); }
+
+function renderEsai(){
+  const c = document.getElementById("container-esai");
+  c.innerHTML = SOAL_ESAI.map((s,i) => `
+    <div class="question-block">
+      <span class="q-number">F${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <textarea class="esai-input" id="esai-${i}" placeholder="Tulis jawabanmu di sini..." oninput="isiEsai(${i}, this.value)"></textarea>
+      <div class="esai-counter" id="esai-counter-${i}">0 kata</div>
+    </div>`).join("");
+}
+function isiEsai(i,val){
+  jawabanEsai[i] = val;
+  const jumlahKata = val.trim() === "" ? 0 : val.trim().split(/\s+/).length;
+  document.getElementById(`esai-counter-${i}`).textContent = jumlahKata + " kata";
+  perbaruiProgress();
+}
+
+/* =========================================================================
+   PROGRESS
+   ========================================================================= */
+function perbaruiProgress(){
+  let terjawab = 0;
+  terjawab += jawabanPG.filter(v => v !== null).length;
+  terjawab += jawabanPGK.filter(s => s.size > 0).length;
+  terjawab += jawabanJodoh.filter(v => v !== null).length;
+  terjawab += jawabanBS.filter(v => v !== null).length;
+  terjawab += jawabanIsian.filter(v => v.trim() !== "").length;
+  terjawab += jawabanEsai.filter(v => v.trim() !== "").length;
+  const total = TOTAL_SOAL_OTOMATIS + SOAL_ESAI.length;
+  const persen = Math.round((terjawab/total)*100);
+  document.getElementById("progress-fill").style.width = persen + "%";
+  document.getElementById("progress-text").textContent = `${terjawab} dari ${total} soal terjawab`;
+}
+
+/* =========================================================================
+   NAVIGASI LAYAR
+   ========================================================================= */
+function tampilkanLayar(id){
+  ["screen-start","screen-quiz","screen-result","screen-history"].forEach(s => document.getElementById(s).classList.add("hidden"));
+  document.getElementById(id).classList.remove("hidden");
+  window.scrollTo({top:0, behavior:"smooth"});
+}
+
+function mulaiUjian(){
+  const nama = document.getElementById("input-nama").value.trim();
+  const kelas = document.getElementById("input-kelas").value.trim();
+  if(!nama){
+    document.getElementById("input-nama").focus();
+    document.getElementById("input-nama").style.outline = "2px solid var(--kontra)";
+    return;
+  }
+  dataSiswaAktif = {nama, kelas: kelas || "-"};
+  jawabanPG = new Array(SOAL_PG.length).fill(null);
+  jawabanPGK = SOAL_PGK.map(() => new Set());
+  jawabanJodoh = new Array(SOAL_JODOH.length).fill(null);
+  jawabanBS = new Array(SOAL_BS.length).fill(null);
+  jawabanIsian = new Array(SOAL_ISIAN.length).fill("");
+  jawabanEsai = new Array(SOAL_ESAI.length).fill("");
+
+  renderPG(); renderPGK(); renderJodoh(); renderBS(); renderIsian(); renderEsai();
+  perbaruiProgress();
+  tampilkanLayar("screen-quiz");
+}
+
+/* =========================================================================
+   PENILAIAN
+   ========================================================================= */
+function normalisasi(str){ return str.trim().toLowerCase().replace(/\s+/g," "); }
+
+function kumpulkanJawaban(){
+  const semuaTerjawab =
+    jawabanPG.every(v => v !== null) &&
+    jawabanPGK.every(s => s.size > 0) &&
+    jawabanJodoh.every(v => v !== null) &&
+    jawabanBS.every(v => v !== null) &&
+    jawabanIsian.every(v => v.trim() !== "") &&
+    jawabanEsai.every(v => v.trim() !== "");
+
+  const warn = document.getElementById("warn-belum-lengkap");
+  if(!semuaTerjawab){
+    warn.style.display = "block";
+    warn.scrollIntoView({behavior:"smooth", block:"center"});
+    return;
+  }
+  warn.style.display = "none";
+
+  let benarA = 0, benarB = 0, benarC = 0, benarD = 0, benarE = 0;
+
+  SOAL_PG.forEach((s,i) => { if(jawabanPG[i] === s.jawaban) benarA++; });
+
+  SOAL_PGK.forEach((s,i) => {
+    const dipilih = Array.from(jawabanPGK[i]).sort((a,b)=>a-b);
+    const kunci = [...s.jawaban].sort((a,b)=>a-b);
+    if(dipilih.length === kunci.length && dipilih.every((v,idx) => v === kunci[idx])) benarB++;
+  });
+
+  SOAL_JODOH.forEach((s,i) => { if(jawabanJodoh[i] === s.jawaban) benarC++; });
+
+  SOAL_BS.forEach((s,i) => { if(jawabanBS[i] === s.jawaban) benarD++; });
+
+  SOAL_ISIAN.forEach((s,i) => {
+    const jawabanSiswaNorm = normalisasi(jawabanIsian[i]);
+    if(s.kunci.some(k => normalisasi(k) === jawabanSiswaNorm)) benarE++;
+  });
+
+  const totalBenar = benarA + benarB + benarC + benarD + benarE;
+  const nilaiObjektif = Math.round((totalBenar / TOTAL_SOAL_OTOMATIS) * 100);
+
+  const riwayat = ambilRiwayat();
+  riwayat.unshift({
+    nama: dataSiswaAktif.nama, kelas: dataSiswaAktif.kelas,
+    nilaiObjektif, totalBenar, totalSoalOtomatis: TOTAL_SOAL_OTOMATIS,
+    detail: {a:benarA, b:benarB, c:benarC, d:benarD, e:benarE},
+    tanggal: new Date().toLocaleString("id-ID", {dateStyle:"medium", timeStyle:"short"})
+  });
+  simpanRiwayat(riwayat);
+
+  tampilkanHasil(nilaiObjektif, {a:benarA, b:benarB, c:benarC, d:benarD, e:benarE});
+}
+
+function tampilkanHasil(nilaiObjektif, detail){
+  document.getElementById("score-num").textContent = nilaiObjektif;
+  document.getElementById("score-nama-label").textContent = `${dataSiswaAktif.nama} · ${dataSiswaAktif.kelas}`;
+  document.getElementById("sc-a").textContent = `${detail.a}/${SOAL_PG.length}`;
+  document.getElementById("sc-b").textContent = `${detail.b}/${SOAL_PGK.length}`;
+  document.getElementById("sc-c").textContent = `${detail.c}/${SOAL_JODOH.length}`;
+  document.getElementById("sc-d").textContent = `${detail.d}/${SOAL_BS.length}`;
+  document.getElementById("sc-e").textContent = `${detail.e}/${SOAL_ISIAN.length}`;
+
+  const review = document.getElementById("review-container");
+  let html = "";
+
+  // Review A
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge a">A</div><div class="section-title">Pilihan Ganda</div></div>`;
+  SOAL_PG.forEach((s,i) => {
+    let opsiHTML = "";
+    s.opsi.forEach((op,j) => {
+      let cls = "option", tag = "";
+      if(j === s.jawaban){ cls += " correct"; tag = `<span class="tag correct">Kunci</span>`; }
+      else if(j === jawabanPG[i] && jawabanPG[i] !== s.jawaban){ cls += " wrong"; tag = `<span class="tag wrong">Jawabanmu</span>`; }
+      opsiHTML += `<div class="${cls}"><span>${op}</span>${tag}</div>`;
+    });
+    html += `<div class="question-block"><span class="q-number">A${i+1}</span><div class="q-text">${s.teks}</div><div class="options">${opsiHTML}</div></div>`;
+  });
+
+  // Review B
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge b">B</div><div class="section-title">Pilihan Ganda Kompleks</div></div>`;
+  SOAL_PGK.forEach((s,i) => {
+    let opsiHTML = "";
+    s.opsi.forEach((op,j) => {
+      let cls = "option", tag = "";
+      const dipilih = jawabanPGK[i].has(j);
+      const benar = s.jawaban.includes(j);
+      if(benar){ cls += " correct"; tag = `<span class="tag correct">Kunci</span>`; }
+      else if(dipilih && !benar){ cls += " wrong"; tag = `<span class="tag wrong">Jawabanmu</span>`; }
+      opsiHTML += `<div class="${cls}"><span>${op}</span>${tag}</div>`;
+    });
+    html += `<div class="question-block"><span class="q-number">B${i+1}</span><div class="q-text">${s.teks}</div><div class="options">${opsiHTML}</div></div>`;
+  });
+
+  // Review C
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge c">C</div><div class="section-title">Menjodohkan</div></div>`;
+  SOAL_JODOH.forEach((s,i) => {
+    const benar = jawabanJodoh[i] === s.jawaban;
+    html += `<div class="question-block">
+      <span class="q-number">C${i+1}</span>
+      <div class="q-text">${s.kiri}</div>
+      <div style="font-size:13.5px; margin-bottom:4px;">Jawabanmu: <b style="color:${benar ? 'var(--pro)' : 'var(--kontra)'}">${jawabanJodoh[i] !== null ? JODOH_KANAN[jawabanJodoh[i]] : '(kosong)'}</b></div>
+      ${!benar ? `<div class="jodoh-answer-key">Kunci: ${JODOH_KANAN[s.jawaban]}</div>` : ""}
+    </div>`;
+  });
+
+  // Review D
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge d">D</div><div class="section-title">Benar / Salah</div></div>`;
+  SOAL_BS.forEach((s,i) => {
+    const benar = jawabanBS[i] === s.jawaban;
+    html += `<div class="question-block">
+      <span class="q-number">D${i+1}</span>
+      <div class="q-text" style="margin-bottom:8px;">${s.teks}</div>
+      <div class="bs-row">
+        <div class="bs-btn ${s.jawaban === true ? 'correct' : (jawabanBS[i] === true ? 'wrong' : '')}">Benar</div>
+        <div class="bs-btn ${s.jawaban === false ? 'correct' : (jawabanBS[i] === false ? 'wrong' : '')}">Salah</div>
+      </div>
+    </div>`;
+  });
+
+  // Review E
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge e">E</div><div class="section-title">Isian Singkat</div></div>`;
+  SOAL_ISIAN.forEach((s,i) => {
+    const benar = s.kunci.some(k => normalisasi(k) === normalisasi(jawabanIsian[i]));
+    html += `<div class="question-block">
+      <span class="q-number">E${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <input type="text" class="isian-input ${benar ? 'correct' : 'wrong'}" value="${jawabanIsian[i]}" disabled>
+      ${!benar ? `<div class="isian-key">Kunci: ${s.kunci[0]}</div>` : ""}
+    </div>`;
+  });
+
+  // Review F
+  html += `<div class="section-head" style="margin-top:6px;"><div class="section-badge f">F</div><div class="section-title">Esai</div></div>`;
+  SOAL_ESAI.forEach((s,i) => {
+    html += `<div class="question-block">
+      <span class="q-number">F${i+1}</span>
+      <div class="q-text">${s.teks}</div>
+      <span class="badge-review">Perlu dinilai guru</span>
+      <div class="esai-review-box">${jawabanEsai[i] || "(kosong)"}</div>
+    </div>`;
+  });
+
+  review.innerHTML = html;
+  tampilkanLayar("screen-result");
+}
+
+function ulangiUjian(){ tampilkanLayar("screen-start"); }
+
+function tampilkanRiwayat(){
+  const riwayat = ambilRiwayat();
+  const container = document.getElementById("history-container");
+  if(riwayat.length === 0){
+    container.innerHTML = `<div style="color:var(--ink-soft); font-size:14px;">Belum ada riwayat nilai pada sesi ini.</div>`;
+  } else {
+    container.innerHTML = riwayat.map(r => `
+      <div class="history-item">
+        <div>
+          <div class="h-name">${r.nama} <span style="color:var(--ink-soft); font-weight:400;">· ${r.kelas}</span></div>
+          <div class="h-meta">${r.tanggal} · ${r.totalBenar}/${r.totalSoalOtomatis} soal otomatis benar</div>
+        </div>
+        <div class="h-score">${r.nilaiObjektif}</div>
+      </div>`).join("");
+  }
+  tampilkanLayar("screen-history");
+}
+function kembaliDariRiwayat(){ tampilkanLayar("screen-result"); }
+</script>
+</body>
+</html>
