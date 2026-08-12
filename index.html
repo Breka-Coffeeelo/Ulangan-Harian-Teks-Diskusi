@@ -159,6 +159,11 @@ textarea.esai-input{ width:100%; min-height:110px; padding:12px 13px; border-rad
 .score-cell b{ display:block; font-family:'Newsreader',serif; font-size:18px; }
 .score-cell span{ font-size:10px; color:var(--ink-soft); font-weight:600; text-transform:uppercase; letter-spacing:.03em; }
 .esai-note{ text-align:center; font-size:12.5px; color:#5B4B8A; background:#EEE9F7; border-radius:10px; padding:10px; margin-top:14px; }
+.spreadsheet-status{ text-align:center; font-size:12px; font-weight:600; border-radius:10px; padding:9px; margin-top:10px; }
+.spreadsheet-status.pending{ color:var(--ink-soft); background:#F3F4F6; }
+.spreadsheet-status.ok{ color:#1E4A33; background:var(--pro-soft); }
+.spreadsheet-status.fail{ color:#6E2325; background:var(--kontra-soft); }
+.spreadsheet-status:empty{ display:none; }
 
 .history-item{ display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid var(--line); font-size:13.5px; }
 .history-item:last-child{ border-bottom:none; }
@@ -282,6 +287,7 @@ footer.note{ text-align:center; font-size:11.5px; color:var(--ink-soft); margin-
         <div class="score-cell"><b id="sc-e">0/5</b><span>Isian</span></div>
       </div>
       <div class="esai-note">5 jawaban esai tersimpan dan menunggu penilaian guru secara manual (lihat di bawah).</div>
+      <div class="spreadsheet-status pending" id="status-spreadsheet"></div>
     </div>
     <div id="review-container"></div>
     <div class="btn-row">
@@ -331,6 +337,40 @@ const memoryStorage = {
 const STORAGE_KEY = "hasil_ulangan_teks_diskusi_60soal";
 function ambilRiwayat(){ const raw = memoryStorage.getItem(STORAGE_KEY); return raw ? JSON.parse(raw) : []; }
 function simpanRiwayat(list){ memoryStorage.setItem(STORAGE_KEY, JSON.stringify(list)); }
+
+/* =========================================================================
+   KIRIM HASIL KE GOOGLE SHEETS (opsional, untuk rekap terpusat semua siswa)
+   -----------------------------------------------------------------------
+   1. Buat Google Sheet baru.
+   2. Buka menu Extensions > Apps Script, hapus isi default, lalu tempel
+      skrip "doPost" yang disertakan terpisah, lalu Save.
+   3. Klik Deploy > New deployment > pilih tipe "Web app".
+      - Execute as: Me
+      - Who has access: Anyone
+   4. Klik Deploy, salin URL Web App yang muncul, lalu tempelkan di
+      SPREADSHEET_URL di bawah ini (ganti tanda kutip kosong).
+   5. Setiap kali skrip Apps Script diubah, deploy ulang sebagai versi baru.
+   Jika SPREADSHEET_URL dibiarkan kosong, ulangan tetap berjalan normal,
+   hanya saja hasil tidak dikirim ke spreadsheet (tetap tersimpan di
+   Riwayat Nilai lokal seperti biasa).
+   ========================================================================= */
+const SPREADSHEET_URL = "https://script.google.com/macros/s/AKfycbzoMTY3qlZ8K1GJQJXJtQO1ymKMnyc5jD73orOtYUmMgkXZjPzQcq2RZe6K5TNIPrr8bg/exec"; // <-- tempel URL Web App Apps Script di sini
+
+async function kirimKeSpreadsheet(payload){
+  if(!SPREADSHEET_URL){ return {terkirim:false, alasan:"belum-dikonfigurasi"}; }
+  try{
+    await fetch(SPREADSHEET_URL, {
+      method: "POST",
+      mode: "no-cors", // Apps Script tidak mengizinkan CORS dibaca; kita kirim tanpa membaca respons
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // hindari preflight OPTIONS
+      body: JSON.stringify(payload)
+    });
+    return {terkirim:true};
+  } catch(err){
+    console.error("Gagal mengirim ke spreadsheet:", err);
+    return {terkirim:false, alasan:"jaringan"};
+  }
+}
 
 /* =========================================================================
    TEKS STIMULUS
@@ -664,7 +704,7 @@ function mulaiUjian(){
    ========================================================================= */
 function normalisasi(str){ return str.trim().toLowerCase().replace(/\s+/g," "); }
 
-function kumpulkanJawaban(){
+async function kumpulkanJawaban(){
   const semuaTerjawab =
     jawabanPG.every(v => v !== null) &&
     jawabanPGK.every(s => s.size > 0) &&
@@ -703,16 +743,34 @@ function kumpulkanJawaban(){
   const totalBenar = benarA + benarB + benarC + benarD + benarE;
   const nilaiObjektif = Math.round((totalBenar / TOTAL_SOAL_OTOMATIS) * 100);
 
+  const tanggal = new Date().toLocaleString("id-ID", {dateStyle:"medium", timeStyle:"short"});
+
   const riwayat = ambilRiwayat();
   riwayat.unshift({
     nama: dataSiswaAktif.nama, kelas: dataSiswaAktif.kelas,
     nilaiObjektif, totalBenar, totalSoalOtomatis: TOTAL_SOAL_OTOMATIS,
     detail: {a:benarA, b:benarB, c:benarC, d:benarD, e:benarE},
-    tanggal: new Date().toLocaleString("id-ID", {dateStyle:"medium", timeStyle:"short"})
+    tanggal
   });
   simpanRiwayat(riwayat);
 
   tampilkanHasil(nilaiObjektif, {a:benarA, b:benarB, c:benarC, d:benarD, e:benarE});
+
+  // kirim ke Google Sheets (jika SPREADSHEET_URL sudah dikonfigurasi)
+  const statusEl = document.getElementById("status-spreadsheet");
+  statusEl.textContent = SPREADSHEET_URL ? "⏳ Mengirim hasil ke spreadsheet..." : "ℹ️ Pengiriman ke spreadsheet belum dikonfigurasi (nilai hanya tersimpan lokal).";
+  statusEl.className = "spreadsheet-status pending";
+
+  const payload = {
+    tanggal, nama: dataSiswaAktif.nama, kelas: dataSiswaAktif.kelas, nilaiObjektif,
+    benarA, benarB, benarC, benarD, benarE,
+    esai1: jawabanEsai[0], esai2: jawabanEsai[1], esai3: jawabanEsai[2], esai4: jawabanEsai[3], esai5: jawabanEsai[4]
+  };
+  const hasil = await kirimKeSpreadsheet(payload);
+  if(SPREADSHEET_URL){
+    statusEl.textContent = hasil.terkirim ? "✓ Hasil tersimpan ke spreadsheet." : "⚠ Gagal mengirim ke spreadsheet, tetapi nilai tetap tersimpan lokal di perangkat ini.";
+    statusEl.className = "spreadsheet-status " + (hasil.terkirim ? "ok" : "fail");
+  }
 }
 
 function tampilkanHasil(nilaiObjektif, detail){
